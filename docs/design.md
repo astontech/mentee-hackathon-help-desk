@@ -81,5 +81,6 @@ erDiagram
         string priority "enum: 'LOW', 'NORMAL', 'HIGH', 'URGENT'"
         string status "enum: 'UNASSIGNED', 'ASSIGNED', 'IN_PROGRESS', 'RESOLVED'"
         timestamp createdAt
+        timestamp lastEscalationDate
     }
 ```
