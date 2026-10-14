@@ -63,14 +63,14 @@ Routing Overlap:
 | /tickets/:id                              | GET    | get ticket by ID                        |
 | /tickets                                  | GET    | get all tickets                         |
 | /tickets/escalated                        | GET    | get all escalated tickets               |
-
+| /tickets/:id/status                       | PATCH  | update the status of a ticket by ID     |
 
 ```mermaid
 erDiagram
-    AGENT || --o{ TICKET : Owns
+    AGENT || --o{ TICKET: Owns
     AGENT {
         long id PK
-        string name 
+        string name
         string email
     }
     TICKET {
