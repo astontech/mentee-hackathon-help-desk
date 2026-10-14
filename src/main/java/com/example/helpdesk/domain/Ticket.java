@@ -36,7 +36,7 @@ public class Ticket {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private TicketStatus status;
+    private TicketStatus status = TicketStatus.UNASSIGNED;
 
     @Column(nullable = false)
     private Instant createdAt;
