@@ -6,6 +6,11 @@ on:
   push:
     branches: [main]
 
+permissions:
+  contents: read
+  # Lets the coverage step comment on the pull request.
+  pull-requests: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -25,3 +30,16 @@ jobs:
           name: coverage-report
           path: build/reports/jacoco/test/
           if-no-files-found: ignore
+      # Posts overall and changed-file coverage as one PR comment, updated on each push, and in the run summary.
+      # Runs when the build fails on coverage too, so the comment shows what fell short.
+      - name: Comment coverage on PR
+        if: always() && github.event_name == 'pull_request' && hashFiles('build/reports/jacoco/test/jacocoTestReport.xml') != ''
+        uses: madrapps/jacoco-report@v1.8.0
+        with:
+          paths: build/reports/jacoco/test/jacocoTestReport.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-overall: 80
+          min-coverage-changed-files: 80
+          title: Code coverage
+          update-comment: true
+          comment-type: both
