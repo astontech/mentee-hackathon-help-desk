@@ -34,8 +34,14 @@ public class Ticket {
     @Column(nullable = false)
     private Priority priority;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private TicketStatus status = TicketStatus.UNASSIGNED;
+
     @Column(nullable = false)
     private Instant createdAt;
+
+    private Instant lastEscalationDate;
 
     public Ticket(String title, String description, Priority priority, Instant createdAt) {
         this.title = title;
