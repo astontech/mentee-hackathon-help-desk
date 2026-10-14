@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'jacoco'
     id 'org.springframework.boot' version '4.1.1'
     id 'io.spring.dependency-management' version '1.1.7'
 }
@@ -35,4 +36,48 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+jacoco {
+    // Java 25 bytecode needs JaCoCo 0.8.14 or newer.
+    toolVersion = '0.8.15'
+}
+
+// The Spring Boot entry point only calls SpringApplication.run, so it is left out of coverage.
+def coverageExcludes = ['com/example/helpdesk/HelpDeskApplication.class']
+
+tasks.named('test') {
+    finalizedBy tasks.named('jacocoTestReport')
+}
+
+tasks.named('jacocoTestReport') {
+    dependsOn tasks.named('test')
+    reports {
+        xml.required = true
+        html.required = true
+    }
+    classDirectories.setFrom(files(classDirectories.files.collect {
+        fileTree(dir: it, exclude: coverageExcludes)
+    }))
+}
+
+// Fails the build when line coverage drops below 80%. Runs as part of `check`, so `./gradlew build` enforces it.
+tasks.named('jacocoTestCoverageVerification') {
+    dependsOn tasks.named('test')
+    classDirectories.setFrom(files(classDirectories.files.collect {
+        fileTree(dir: it, exclude: coverageExcludes)
+    }))
+    violationRules {
+        rule {
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 0.80
+            }
+        }
+    }
+}
+
+tasks.named('check') {
+    dependsOn tasks.named('jacocoTestCoverageVerification')
 }

@@ -16,4 +16,12 @@ jobs:
           distribution: temurin
           java-version: '25'
       - uses: gradle/actions/setup-gradle@v4
+      # `build` runs the tests and the JaCoCo check, so it fails when line coverage is below 80%.
       - run: ./gradlew build
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: build/reports/jacoco/test/
+          if-no-files-found: ignore

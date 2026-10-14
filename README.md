@@ -32,6 +32,8 @@ This puts the database back to its starting state: no tickets, only the seed age
 
 The tests start their own throwaway Postgres container, so they never touch your local data. CI runs the same build on every pull request, and a pull request can't merge until it passes.
 
+The build also checks test coverage with JaCoCo: it fails if the tests cover less than 80% of the lines in `src/main`. After `./gradlew test`, open `build/reports/jacoco/test/html/index.html` to see what's covered. In CI, the same report is attached to the run as the `coverage-report` artifact.
+
 If the tests fail to start a container on a Mac using Colima, run `export TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE=/var/run/docker.sock` first.
 
 ## What's here
