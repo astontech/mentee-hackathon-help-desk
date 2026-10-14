@@ -1,6 +1,7 @@
 package com.example.helpdesk.service;
 
 import com.example.helpdesk.domain.Ticket;
+import com.example.helpdesk.domain.TicketStatus;
 import com.example.helpdesk.dto.CreateTicketRequest;
 import com.example.helpdesk.repo.TicketRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,5 +27,10 @@ public class TicketService {
     public Ticket get(Long id) {
         return ticketRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("No ticket with id " + id));
+    }
+
+    @Transactional(readOnly = true)
+    public Iterable<Ticket> getUnassignedTicketsOrderedByPriority(){
+        return ticketRepository.findUnassignedTicketsOrderedbyPriority();
     }
 }
