@@ -34,8 +34,12 @@ class AgentApiTests {
 
         assertThat(created).hasStatus(201);
         assertThat(created).bodyJson().extractingPath("$.name").isEqualTo("John");
-        assertThat(created).bodyJson().extractingPath("$.email").isEqualTo("John@astontech.com");
+        String location = created.getResponse().getHeader("Location");
 
+        assert location != null;
+        assertThat(mvc.get().uri(location))
+                .hasStatusOk()
+                .bodyJson().extractingPath("$.email").isEqualTo("John@astontech.com");
     }
 
     @Test
