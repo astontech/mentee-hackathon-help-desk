@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
@@ -34,12 +35,29 @@ public class TicketService {
     }
 
     @Scheduled(fixedRateString = "${escalation-job-schedule-window}")
-    public void getAllTicketsThatNeedEscalation(){
+    public void getAllTicketsThatNeedEscalation() {
         //run escalation query
-        System.out.println("LOW " + priorityWindowLookup.getWindowValurForStatus(Priority.LOW));
-        System.out.println("NORMAL " + priorityWindowLookup.getWindowValurForStatus(Priority.NORMAL));
-        System.out.println("HIGH " + priorityWindowLookup.getWindowValurForStatus(Priority.HIGH));
-        System.out.println("URGENT " + priorityWindowLookup.getWindowValurForStatus(Priority.URGENT));
+        Instant now = Instant.now();
+        Instant lowPriorityCutoffDate = now.minus(priorityWindowLookup.getWindowValurForStatus(Priority.LOW));
+        Instant normalPriorityCutoffDate = now.minus(priorityWindowLookup.getWindowValurForStatus(Priority.NORMAL));
+        Instant highPriorityCutoffDate = now.minus(priorityWindowLookup.getWindowValurForStatus(Priority.HIGH));
+        Instant urgentPriorityCutoffDate = now.minus(priorityWindowLookup.getWindowValurForStatus(Priority.URGENT));
+
+        List<Ticket> ticketsNeedingEscalation = ticketRepository.findAllOpenTicketsWithStatusUnassignedAssignedOrInProgressAndIsOverCutoffDate(
+                lowPriorityCutoffDate,
+                normalPriorityCutoffDate,
+                highPriorityCutoffDate,
+                urgentPriorityCutoffDate
+        );
+
+        for (Ticket ticket : ticketsNeedingEscalation) {
+            System.out.println();
+            System.out.println("ticket ID: " + ticket.getId());
+            System.out.println("ticket priority: " + ticket.getPriority());
+            System.out.println("ticket status: " + ticket.getStatus());
+            System.out.println("ticket date created: " + ticket.getCreatedAt());
+        }
+
 
         //update all tickets within list to appropriate priorities.
     }
