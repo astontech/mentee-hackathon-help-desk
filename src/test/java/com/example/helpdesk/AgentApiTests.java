@@ -65,6 +65,12 @@ class AgentApiTests {
     }
 
     @Test
+    void unknownAgentIsNotFound() {
+        assertThat(mvc.get().uri("/agents/999999"))
+                .hasStatus(404);
+    }
+
+    @Test
     void seedAgentsAreLoaded() {
         assertThat(mvc.get().uri("/agents"))
                 .hasStatusOk()
