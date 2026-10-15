@@ -9,4 +9,8 @@ INSERT INTO ticket (title, description, priority, status, created_at) VALUES
     ('Low Ticket', 'This is a new ticket that is low priority', 'LOW', 'UNASSIGNED', clock_timestamp()),
     ('Normal Ticket', 'This is a new ticket that is normal priority', 'NORMAL', 'UNASSIGNED', clock_timestamp()),
     ('High Ticket', 'This is a new ticket that is high priority', 'HIGH', 'UNASSIGNED', clock_timestamp()),
-    ('Urgent Ticket', 'This is a new ticket that is urgent priority', 'URGENT', 'UNASSIGNED', clock_timestamp());
+    ('Urgent Ticket', 'This is a new ticket that is urgent priority', 'URGENT', 'UNASSIGNED', clock_timestamp()),
+    ('Low Assigned Ticket', 'This is a new ticket assigned that is low priority', 'LOW', 'ASSIGNED', clock_timestamp()),
+    ('Normal In Progress Ticket', 'This is a new in progress ticket that is Normal priority', 'NORMAL', 'IN_PROGRESS', clock_timestamp()),
+    ('High Resolved Ticket', 'This is a new resolved ticket that is high priority', 'HIGH', 'RESOLVED', clock_timestamp()),
+    ('Urgent Assigned Ticket', 'This is a new assigned ticket that is urgent priority', 'URGENT', 'UNASSIGNED', clock_timestamp());
