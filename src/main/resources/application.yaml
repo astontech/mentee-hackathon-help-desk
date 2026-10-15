@@ -16,8 +16,9 @@ spring:
 
 escalation-job-schedule-window: "5m"
 
-escalation-window:
-  LOW: "3d"
-  NORMAL: "1d"
-  HIGH: "4h"
-  URGENT: "1h"
+escalation:
+  windows:
+    LOW: "3d"
+    NORMAL: "1d"
+    HIGH: "4h"
+    URGENT: "1h"
