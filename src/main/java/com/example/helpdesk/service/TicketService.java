@@ -60,5 +60,8 @@ public class TicketService {
 
 
         //update all tickets within list to appropriate priorities.
+            //if lastEscalationDate is null, update
+            //else if lastEscalationDate is not null and priority is not urgent, update
+            //else ticket is already urgent and has an escalation date, ignore. (this doesn't seem right)
     }
 }

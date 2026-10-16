@@ -33,7 +33,7 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
                     OR
                         (ticket.priority = com.example.helpdesk.domain.Priority.URGENT 
                          AND
-                        COALESCE(ticket.lastEscalationDate, ticket.createdAt) < :urgentPriorityCutoffDate)
+                        ((ticket.lastEscalationDate is null) AND (ticket.createdAt < :urgentPriorityCutoffDate)))
                    ) 
             """)
     List<Ticket> findAllOpenTicketsWithStatusUnassignedAssignedOrInProgressAndIsOverCutoffDate(
