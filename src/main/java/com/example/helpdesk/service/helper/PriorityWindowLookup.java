@@ -26,7 +26,7 @@ public class PriorityWindowLookup {
 
     }
 
-    public Duration getWindowValurForStatus(Priority priority) {
+    public Duration getWindowValueForPriority(Priority priority) {
         return PRIORITY_WINDOW_VALUES.getOrDefault(priority, null);
     }
 }

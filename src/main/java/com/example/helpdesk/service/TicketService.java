@@ -6,7 +6,6 @@ import com.example.helpdesk.dto.CreateTicketRequest;
 import com.example.helpdesk.repo.TicketRepository;
 import com.example.helpdesk.service.helper.PriorityWindowLookup;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,10 +37,10 @@ public class TicketService {
     public void getAllTicketsThatNeedEscalation() {
         //run escalation query
         Instant now = Instant.now();
-        Instant lowPriorityCutoffDate = now.minus(priorityWindowLookup.getWindowValurForStatus(Priority.LOW));
-        Instant normalPriorityCutoffDate = now.minus(priorityWindowLookup.getWindowValurForStatus(Priority.NORMAL));
-        Instant highPriorityCutoffDate = now.minus(priorityWindowLookup.getWindowValurForStatus(Priority.HIGH));
-        Instant urgentPriorityCutoffDate = now.minus(priorityWindowLookup.getWindowValurForStatus(Priority.URGENT));
+        Instant lowPriorityCutoffDate = now.minus(priorityWindowLookup.getWindowValueForPriority(Priority.LOW));
+        Instant normalPriorityCutoffDate = now.minus(priorityWindowLookup.getWindowValueForPriority(Priority.NORMAL));
+        Instant highPriorityCutoffDate = now.minus(priorityWindowLookup.getWindowValueForPriority(Priority.HIGH));
+        Instant urgentPriorityCutoffDate = now.minus(priorityWindowLookup.getWindowValueForPriority(Priority.URGENT));
 
         List<Ticket> ticketsNeedingEscalation = ticketRepository.findAllOpenTicketsWithStatusUnassignedAssignedOrInProgressAndIsOverCutoffDate(
                 lowPriorityCutoffDate,
@@ -50,18 +49,6 @@ public class TicketService {
                 urgentPriorityCutoffDate
         );
 
-        for (Ticket ticket : ticketsNeedingEscalation) {
-            System.out.println();
-            System.out.println("ticket ID: " + ticket.getId());
-            System.out.println("ticket priority: " + ticket.getPriority());
-            System.out.println("ticket status: " + ticket.getStatus());
-            System.out.println("ticket date created: " + ticket.getCreatedAt());
-        }
-
-
-        //update all tickets within list to appropriate priorities.
-            //if lastEscalationDate is null, update
-            //else if lastEscalationDate is not null and priority is not urgent, update
-            //else ticket is already urgent and has an escalation date, ignore. (this doesn't seem right)
+        //TODO processing: See next ticket.
     }
 }
