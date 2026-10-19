@@ -8,7 +8,6 @@ import org.springframework.data.repository.query.Param;
 import java.time.Instant;
 import java.util.List;
 
-
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
 
@@ -42,6 +41,15 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
             @Param("highPriorityCutoffDate") Instant highPriorityCutoffDate,
             @Param("urgentPriorityCutoffDate") Instant urgentPriorityCutoffDate
     );
+
+    @Query("""
+                    SELECT t FROM Ticket t WHERE t.status = 'UNASSIGNED'
+                    ORDER BY CASE t.priority
+                        WHEN 'URGENT' THEN 0
+                        WHEN 'HIGH' THEN 1
+                        WHEN 'NORMAL' THEN 2
+                        ELSE 3
+                        END
+            """)
+    Iterable<Ticket> findUnassignedTicketsOrderedbyPriority();
 }
-
-
