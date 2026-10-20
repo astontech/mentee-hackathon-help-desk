@@ -1,18 +1,16 @@
 package com.example.helpdesk.controller;
 
 import com.example.helpdesk.domain.Ticket;
+import com.example.helpdesk.domain.TicketStatus;
 import com.example.helpdesk.dto.CreateTicketRequest;
 import com.example.helpdesk.dto.TicketResponse;
+import com.example.helpdesk.dto.TicketStatusRequest;
 import com.example.helpdesk.service.TicketService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 
@@ -33,5 +31,10 @@ public class TicketController {
     @GetMapping("{id}")
     public TicketResponse get(@PathVariable Long id) {
         return TicketResponse.from(ticketService.get(id));
+    }
+
+    @PatchMapping("{id}/status")
+    public ResponseEntity<TicketResponse> updateStatus(@PathVariable Long id, @RequestBody TicketStatusRequest request) {
+        return new ResponseEntity<>(TicketResponse.from(ticketService.updateStatus(id, request.status())), HttpStatus.OK);
     }
 }
