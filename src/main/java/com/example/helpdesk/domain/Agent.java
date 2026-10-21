@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import java.time.Instant;
 import java.util.List;
 
-// Agents come from data.sql. There's no endpoint to add or change them.
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -29,4 +28,9 @@ public class Agent {
 
     @OneToMany
     private List<Ticket> tickets;
+
+    public Agent(String name, String email) {
+        this.name = name;
+        this.email = email;
+    }
 }
