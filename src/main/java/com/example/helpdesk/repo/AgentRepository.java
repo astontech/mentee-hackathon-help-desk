@@ -12,10 +12,9 @@ public interface AgentRepository extends JpaRepository<Agent, Long> {
             SELECT NEW com.example.helpdesk.dto.AgentAssignmentRecord(a.id, COUNT(t.id)) AS ticketCount
             FROM Agent a
             LEFT JOIN a.tickets t ON t.status != 'RESOLVED'
-                        GROUP BY a.id
-                        HAVING COUNT(t.id) < :ticketLimit
-            ORDER BY ticketCount
-            
+            GROUP BY a.id
+            HAVING COUNT(t.id) < :ticketLimit
+            ORDER BY ticketCount, a.lastAssignedTs
             """)
     Iterable<AgentAssignmentRecord> findAvailableAgentsOrderedByLastAssignment(@Param("ticketLimit") int ticketLimit);
 }

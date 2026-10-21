@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
 import java.util.List;
 
 // Agents come from data.sql. There's no endpoint to add or change them.
@@ -22,6 +23,9 @@ public class Agent {
 
     @Column(nullable = false, unique = true)
     private String email;
+
+    @Column
+    private Instant lastAssignedTs;
 
     @OneToMany
     private List<Ticket> tickets;

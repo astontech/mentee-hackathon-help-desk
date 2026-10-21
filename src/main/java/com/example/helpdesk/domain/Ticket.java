@@ -41,7 +41,11 @@ public class Ticket {
     @Column(nullable = false)
     private Instant createdAt;
 
+    @Column
     private Instant lastEscalationDate;
+
+    @Column
+    private Instant dateAssigned;
 
     public Ticket(String title, String description, Priority priority, Instant createdAt) {
         this.title = title;
