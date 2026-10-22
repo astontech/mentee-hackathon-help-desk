@@ -51,5 +51,5 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
                         ELSE 3
                         END
             """)
-    Iterable<Ticket> findUnassignedTicketsOrderedbyPriority();
+    Iterable<Ticket> findUnassignedTicketsOrderedByPriority();
 }

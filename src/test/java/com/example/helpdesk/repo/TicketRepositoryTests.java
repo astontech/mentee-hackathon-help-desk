@@ -21,7 +21,7 @@ public class TicketRepositoryTests {
 
     @Test
     void returnsOnlyUnassignedTicketsInPriorityOrder() {
-        Iterable<Ticket> tickets = ticketRepository.findUnassignedTicketsOrderedbyPriority();
+        Iterable<Ticket> tickets = ticketRepository.findUnassignedTicketsOrderedByPriority();
 
         tickets.forEach(ticket -> {
             assert ticket.getStatus().equals(TicketStatus.UNASSIGNED);

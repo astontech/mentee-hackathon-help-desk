@@ -5,6 +5,7 @@ import com.example.helpdesk.domain.Agent;
 import com.example.helpdesk.domain.Priority;
 import com.example.helpdesk.domain.Ticket;
 import com.example.helpdesk.domain.TicketStatus;
+import com.example.helpdesk.dto.AgentAssignmentDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,11 +48,11 @@ public class AgentRepositoryTests {
         Agent agent2 = saveAgent(now, new ArrayList<>());
 
         //Act
-        Iterable<Agent> agents = agentRepository.findAvailableAgentsOrderedByLastAssignment(3);
+        Iterable<AgentAssignmentDto> agents = agentRepository.findAvailableAgentsOrderedByLastAssignment(3);
 
         //Assert
         //agent2 should be first since it has no tickets associated
-        assertThat(agents).containsExactly(agent2, agent1);
+        assertThat(agents).extracting(AgentAssignmentDto::name).containsExactly(agent2.getName(), agent1.getName());
     }
 
     @Test
@@ -70,11 +71,11 @@ public class AgentRepositoryTests {
         Agent agent2 = saveAgent(Instant.now(), tickets2);
 
         //Act
-        Iterable<Agent> agents = agentRepository.findAvailableAgentsOrderedByLastAssignment(3);
+        Iterable<AgentAssignmentDto> agents = agentRepository.findAvailableAgentsOrderedByLastAssignment(3);
 
         //Assert
-        //agent2 should be first as all of it's tickets are RESOLVED and not active
-        assertThat(agents).containsExactly(agent2, agent1);
+        //agent2 should be first as all of its tickets are RESOLVED and not active
+        assertThat(agents).extracting(AgentAssignmentDto::name).containsExactly(agent2.getName(), agent1.getName());
 
     }
 
@@ -95,7 +96,7 @@ public class AgentRepositoryTests {
 
         //Act
         //Each agent has 3 tickets and the ticket limit is 3
-        Iterable<Agent> agents = agentRepository.findAvailableAgentsOrderedByLastAssignment(3);
+        Iterable<AgentAssignmentDto> agents = agentRepository.findAvailableAgentsOrderedByLastAssignment(3);
 
         //Assert
         assertThat(agents).isEmpty();
@@ -115,7 +116,7 @@ public class AgentRepositoryTests {
 
         //Act
         // Only agent has 6 tickets, but 4 of them are RESOLVED. Limit is for 3 non-RESOLVED
-        Iterable<Agent> agents = agentRepository.findAvailableAgentsOrderedByLastAssignment(3);
+        Iterable<AgentAssignmentDto> agents = agentRepository.findAvailableAgentsOrderedByLastAssignment(3);
 
         //Assert
         assertThat(agents).isNotEmpty();
@@ -136,11 +137,11 @@ public class AgentRepositoryTests {
         Agent agent2 = saveAgent(NOW.minus(2, ChronoUnit.HOURS), tickets2);
 
         //Act
-        Iterable<Agent> agents = agentRepository.findAvailableAgentsOrderedByLastAssignment(3);
+        Iterable<AgentAssignmentDto> agents = agentRepository.findAvailableAgentsOrderedByLastAssignment(3);
 
         //Assert
         //Agent2 Should come first as they have gone the longest without being assigned
-        assertThat(agents).containsExactly(agent2,agent1);
+        assertThat(agents).extracting(AgentAssignmentDto::name).containsExactly(agent2.getName(),agent1.getName());
     }
 
     //Ticket creation helper method
