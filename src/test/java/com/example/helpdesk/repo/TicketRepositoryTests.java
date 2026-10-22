@@ -11,6 +11,8 @@ import org.springframework.context.annotation.Import;
 
 import java.util.Iterator;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
 @DataJpaTest
 @Import(TestcontainersConfiguration.class)
 public class TicketRepositoryTests {
@@ -27,10 +29,10 @@ public class TicketRepositoryTests {
 
         Iterator<Ticket> it = tickets.iterator();
 
-        assert it.next().getPriority() == Priority.URGENT;
-        assert it.next().getPriority() == Priority.URGENT;
-        assert it.next().getPriority() == Priority.HIGH;
-        assert it.next().getPriority() == Priority.NORMAL;
-        assert it.next().getPriority() == Priority.LOW;
+        assertThat(it.next().getPriority() == Priority.URGENT);
+        assertThat(it.next().getPriority() == Priority.URGENT);
+        assertThat(it.next().getPriority() == Priority.HIGH);
+        assertThat(it.next().getPriority() == Priority.NORMAL);
+        assertThat(it.next().getPriority() == Priority.LOW);
     }
 }
