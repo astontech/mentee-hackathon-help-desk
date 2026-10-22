@@ -1,9 +1,14 @@
 package com.example.helpdesk.repo;
 
+import com.example.helpdesk.domain.Priority;
 import com.example.helpdesk.domain.Ticket;
+import com.example.helpdesk.domain.TicketStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.data.web.PageableDefault;
 
 import java.time.Instant;
 import java.util.List;
@@ -52,4 +57,13 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
                         END
             """)
     Iterable<Ticket> findUnassignedTicketsOrderedbyPriority();
+
+    @Query("""
+                SELECT t FROM Ticket t
+                WHERE (:status IS NULL OR :status = t.status)
+                AND (:priority IS NULL OR :priority = t.priority)
+            """)
+    Page<Ticket> getTickets(@Param("status") TicketStatus status,
+                            @Param("priority") Priority priority,
+                            Pageable pageable);
 }
