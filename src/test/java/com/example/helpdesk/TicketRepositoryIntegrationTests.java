@@ -18,7 +18,7 @@ import java.util.List;
 
 @SpringBootTest
 @Import(TestcontainersConfiguration.class)
-public class TicketRepositoryTests {
+public class TicketRepositoryIntegrationTests {
 
     @Autowired
     TicketRepository ticketRepository;
@@ -153,6 +153,8 @@ public class TicketRepositoryTests {
                 urgentOverdue.getId()
         );
     }
+
+    //ToDo add in escalation priority update tests here
 
 
     //region helper methods

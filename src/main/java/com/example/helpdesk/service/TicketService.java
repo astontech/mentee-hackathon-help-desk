@@ -2,7 +2,6 @@ package com.example.helpdesk.service;
 
 import com.example.helpdesk.domain.Priority;
 import com.example.helpdesk.domain.Ticket;
-import com.example.helpdesk.domain.TicketStatus;
 import com.example.helpdesk.dto.CreateTicketRequest;
 import com.example.helpdesk.repo.TicketRepository;
 import com.example.helpdesk.service.helper.PriorityWindowLookup;
@@ -42,7 +41,7 @@ public class TicketService {
     }
 
     @Scheduled(fixedRateString = "${escalation-job-schedule-window}")
-    public void getAllTicketsThatNeedEscalation() {
+    public void escalateOverdueTickets() {
         //run escalation query
         Instant now = Instant.now();
         Instant lowPriorityCutoffDate = now.minus(priorityWindowLookup.getWindowValueForPriority(Priority.LOW));
