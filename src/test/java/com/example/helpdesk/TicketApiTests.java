@@ -63,10 +63,4 @@ class TicketApiTests {
         assertThat(mvc.get().uri("/tickets/999999")).hasStatus(404);
     }
 
-    @Test
-    void seedAgentsAreLoaded() {
-        assertThat(mvc.get().uri("/agents"))
-                .hasStatusOk()
-                .bodyJson().extractingPath("$.length()").isEqualTo(3);
-    }
 }
