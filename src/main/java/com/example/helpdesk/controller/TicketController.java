@@ -36,7 +36,7 @@ public class TicketController {
     }
 
     //pageable allows for sorting
-    @GetMapping()
+    @GetMapping
     public Page<TicketResponse> getTickets( @RequestParam(required = false) TicketStatus status,
                                                 @RequestParam(required = false) Priority priority,
                                                 @PageableDefault(size = 10, sort = "id") Pageable pageable) {
