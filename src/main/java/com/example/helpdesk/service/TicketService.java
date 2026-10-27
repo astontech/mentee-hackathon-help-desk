@@ -44,7 +44,7 @@ public class TicketService {
 
     @Transactional(readOnly = true)
     public Iterable<Ticket> getUnassignedTicketsOrderedByPriority(){
-        return ticketRepository.findUnassignedTicketsOrderedbyPriority();
+        return ticketRepository.findUnassignedTicketsOrderedByPriority();
     }
 
     @Scheduled(fixedRateString = "${escalation-job-schedule-window}")

@@ -8,7 +8,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.data.web.PageableDefault;
 
 import java.time.Instant;
 import java.util.List;
@@ -56,7 +55,7 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
                         ELSE 3
                         END
             """)
-    Iterable<Ticket> findUnassignedTicketsOrderedbyPriority();
+    Iterable<Ticket> findUnassignedTicketsOrderedByPriority();
 
     @Query("""
                 SELECT t FROM Ticket t
