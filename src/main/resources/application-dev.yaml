@@ -6,3 +6,5 @@ escalation:
     NORMAL: "1m"
     HIGH: "30s"
     URGENT: "10s"
+agent:
+  ticket-limit: 3
