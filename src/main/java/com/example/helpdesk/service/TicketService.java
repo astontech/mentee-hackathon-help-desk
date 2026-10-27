@@ -2,11 +2,11 @@ package com.example.helpdesk.service;
 
 import com.example.helpdesk.domain.Priority;
 import com.example.helpdesk.domain.Ticket;
-import com.example.helpdesk.domain.TicketStatus;
 import com.example.helpdesk.dto.CreateTicketRequest;
 import com.example.helpdesk.repo.TicketRepository;
 import com.example.helpdesk.service.helper.PriorityWindowLookup;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +15,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TicketService {
@@ -40,7 +41,7 @@ public class TicketService {
     }
 
     @Scheduled(fixedRateString = "${escalation-job-schedule-window}")
-    public void getAllTicketsThatNeedEscalation() {
+    public void escalateOverdueTickets() {
         //run escalation query
         Instant now = Instant.now();
         Instant lowPriorityCutoffDate = now.minus(priorityWindowLookup.getWindowValueForPriority(Priority.LOW));
@@ -55,6 +56,22 @@ public class TicketService {
                 urgentPriorityCutoffDate
         );
 
-        //TODO processing: See next ticket.
+        int ticketsEscalated = 0;
+        for(Ticket ticket : ticketsNeedingEscalation) {
+            Instant referenceDate = ticket.getLastEscalationDate() == null ? ticket.getCreatedAt() : ticket.getLastEscalationDate();
+            Priority newPriority = ticket.getPriority();
+            Instant newLastEscalationDate = referenceDate.plus(priorityWindowLookup.getWindowValueForPriority(ticket.getPriority()));
+            if(ticket.getPriority() != Priority.URGENT) {
+                newPriority = newPriority.next();
+            }
+            //call ticketRepo to update fields
+            ticketsEscalated += ticketRepository.updatePriorityAndLastEscalationDate(ticket.getId(), newPriority, newLastEscalationDate);
+        }
+        if(ticketsEscalated > 0 ){
+            log.info("Number of tickets escalated: {}", ticketsEscalated);
+        }
+        else{
+            log.debug("Number of tickets escalated: {}", ticketsEscalated);
+        }
     }
 }
