@@ -2,9 +2,11 @@ package com.example.helpdesk.domain;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
 import java.util.List;
 
 @Entity
@@ -22,11 +24,21 @@ public class Agent {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @Column
+    private Instant lastAssignedTs;
+
     @OneToMany
     private List<Ticket> tickets;
 
     public Agent(String name, String email) {
         this.name = name;
         this.email = email;
+    }
+
+    public Agent(String name, String email, Instant lastAssignedTs, List<Ticket> tickets){
+        this.name = name;
+        this.email = email;
+        this.lastAssignedTs = lastAssignedTs;
+        this.tickets = tickets;
     }
 }
