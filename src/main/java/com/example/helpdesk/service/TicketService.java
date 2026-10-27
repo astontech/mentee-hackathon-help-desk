@@ -74,4 +74,13 @@ public class TicketService {
             log.debug("Number of tickets escalated: {}", ticketsEscalated);
         }
     }
+
+    @Transactional
+    public Ticket updateStatus(Long id, TicketStatus status) {
+        Ticket ticket = ticketRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("No ticket with id " + id));
+
+        ticket.setStatus(status);
+        return ticketRepository.save(ticket);
+    }
 }
