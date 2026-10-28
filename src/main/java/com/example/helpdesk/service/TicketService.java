@@ -2,7 +2,9 @@ package com.example.helpdesk.service;
 
 import com.example.helpdesk.domain.Priority;
 import com.example.helpdesk.domain.Ticket;
+import com.example.helpdesk.domain.TicketStatus;
 import com.example.helpdesk.dto.CreateTicketRequest;
+import com.example.helpdesk.dto.TicketResponse;
 import com.example.helpdesk.repo.TicketRepository;
 import com.example.helpdesk.service.helper.PriorityWindowLookup;
 import lombok.RequiredArgsConstructor;
@@ -82,5 +84,11 @@ public class TicketService {
 
         ticket.setStatus(status);
         return ticketRepository.save(ticket);
+    }
+
+    @Transactional(readOnly = true)
+    public List<TicketResponse> getUnresolvedEscalated() {
+        return ticketRepository.findUnresolvedEscalatedTickets()
+                .stream().map(TicketResponse::from).toList();
     }
 }
