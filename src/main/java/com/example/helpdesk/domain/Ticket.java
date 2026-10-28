@@ -59,4 +59,13 @@ public class Ticket {
         this.status = status;
         this.createdAt = createdAt;
     }
+
+    public Ticket(String title, String description, Priority priority, Instant createdAt,
+                  Instant lastEscalationDate) {
+        this.title = title;
+        this.description = description;
+        this.priority = priority;
+        this.createdAt = createdAt;
+        this.lastEscalationDate = lastEscalationDate;
+    }
 }
