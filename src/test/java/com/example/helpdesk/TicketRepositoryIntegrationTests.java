@@ -21,7 +21,7 @@ import java.util.List;
 
 @SpringBootTest
 @Import(TestcontainersConfiguration.class)
-public class TicketRepositoryTests {
+public class TicketRepositoryIntegrationTests {
 
     @Autowired
     TicketRepository ticketRepository;
@@ -155,6 +155,41 @@ public class TicketRepositoryTests {
                 highOverdue.getId(),
                 urgentOverdue.getId()
         );
+    }
+
+    @Test
+    void updateChangesOnlyPriorityAndLastEscalationDate() {
+        //arrange
+        Ticket ticket = saveTicket(Priority.HIGH, NOW.minus(HIGH_WINDOW.multipliedBy(2)));
+        ticket.setStatus(TicketStatus.IN_PROGRESS);
+        ticketRepository.save(ticket);
+
+        //act
+        int rowsUpdated = ticketRepository.updatePriorityAndLastEscalationDate(ticket.getId(), Priority.URGENT, ticket.getCreatedAt().plus(HIGH_WINDOW));
+        Ticket fetchedTicket = ticketRepository.findById(ticket.getId())
+                .orElseThrow(AssertionError::new);
+        //assert
+        assertThat(rowsUpdated).isEqualTo(1);
+        assertThat(fetchedTicket.getPriority()).isEqualTo(Priority.URGENT);
+        assertThat(fetchedTicket.getLastEscalationDate()).isEqualTo(ticket.getCreatedAt().plus(HIGH_WINDOW));
+        assertThat(fetchedTicket)
+                .usingRecursiveComparison()
+                .ignoringFields("priority", "lastEscalationDate")
+                .isEqualTo(ticket);
+
+    }
+
+    @Test
+    void returnsZeroWhenTicketDoesNotExist() {
+        //arrange
+        //none, the table is empty
+
+        //act
+        int rowsUpdated = ticketRepository.updatePriorityAndLastEscalationDate(-1L, Priority.URGENT, NOW);
+
+        //assert
+        assertThat(rowsUpdated).isEqualTo(0);
+
     }
 
     @Test

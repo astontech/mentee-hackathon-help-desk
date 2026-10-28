@@ -5,9 +5,11 @@ import com.example.helpdesk.domain.Ticket;
 import com.example.helpdesk.domain.TicketStatus;
 import com.example.helpdesk.dto.CreateTicketRequest;
 import com.example.helpdesk.dto.TicketResponse;
+import com.example.helpdesk.dto.TicketStatusRequest;
 import com.example.helpdesk.service.TicketService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -41,5 +43,10 @@ public class TicketController {
                                                 @RequestParam(required = false) Priority priority,
                                                 @PageableDefault(size = 10, sort = "id") Pageable pageable) {
         return ticketService.getTickets(status, priority, pageable);
+    }
+
+    @PatchMapping("{id}/status")
+    public ResponseEntity<TicketResponse> updateStatus(@PathVariable Long id, @RequestBody TicketStatusRequest request) {
+        return new ResponseEntity<>(TicketResponse.from(ticketService.updateStatus(id, request.status())), HttpStatus.OK);
     }
 }

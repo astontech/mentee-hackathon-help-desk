@@ -5,7 +5,9 @@ import com.example.helpdesk.domain.Ticket;
 import com.example.helpdesk.domain.TicketStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -56,6 +58,18 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
                         END
             """)
     Iterable<Ticket> findUnassignedTicketsOrderedByPriority();
+
+    @Transactional
+    @Modifying
+    @Query("""
+    UPDATE Ticket t
+    SET t.priority = :priority, t.lastEscalationDate = :lastEscalationDate
+    WHERE t.id = :id
+    """)
+    int updatePriorityAndLastEscalationDate( //returns the number of rows updated
+            @Param("id") Long id,
+            @Param("priority") Priority priority,
+            @Param("lastEscalationDate") Instant lastEscalationDate);
 
     @Query("""
                 SELECT t FROM Ticket t

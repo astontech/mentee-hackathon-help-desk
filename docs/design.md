@@ -23,9 +23,14 @@ Agent Workflow Overlap:
 Design:
 
     - Escalation Period should be set as an environment variable (@Value) so we can update them over time.
-    - Setup schdeduled job to run every 5 minutes to check and update priority of all ASSIGNED, UNASSIGNED, and IN_PROGRESS
+    - Setup schdeduled job to run every 5 minutes (configurable using escalation-job-schedule-window) to check and update priority of all ASSIGNED, UNASSIGNED, and IN_PROGRESS
         tickets based on escalation period
-        - Add an escalated/overdue field to ticket to mark that it has been escalated
+        - "escalated" means lastEscalationDate is set. There's no separate field.
+        - the stamp is reference date + the current window: the exact time the window ran out.
+        - URGENT tickets are stamped once and keep their priority. The query skips them after that.
+        - catch-up is kept: old tickets climb one level per run (product agreed).
+        - no status guard: a ticket resolved mid-run still gets escalated, because it was overdue while open.
+        - scheduling is switched with app.scheduling.enabled, which is off in tests.
 
 Routing Overlap:
 
@@ -33,7 +38,8 @@ Routing Overlap:
 
 Agent WorkFlow Overlap:
 
-    - scheduled job should only update the priority field to avoid update conflicts with an Agent updating ticket status
+    - scheduled job should only update the priority and lastEscalationDate fields to avoid update conflicts with an Agent updating ticket status
+    - targeted UPDATE repository method used so that updates never overwrite status of a ticket.
 
 # Agent Workflow (status updates / viewability)
 

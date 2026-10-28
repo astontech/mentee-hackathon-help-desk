@@ -1,5 +1,6 @@
 package com.example.helpdesk;
 
+import com.jayway.jsonpath.JsonPath;
 import com.example.helpdesk.domain.Priority;
 import com.example.helpdesk.domain.Ticket;
 import com.example.helpdesk.repo.TicketRepository;
@@ -96,5 +97,31 @@ class TicketApiTests {
         assertThat(mvc.get().uri("/tickets")).hasStatusOk()
                 .bodyJson()
                 .extractingPath("$.content").asArray().hasSize(10);
+    }
+    @Test
+    void ticketStatusCanBeUpdated() throws Exception {
+        MvcTestResult created = mvc.post().uri("/tickets")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                        {"title": "ticketTitle", "priority": "LOW", "status": "UNASSIGNED"}
+                        """)
+                .exchange();
+
+        assertThat(created).hasStatus(201);
+
+        Integer id = JsonPath.read(created.getResponse().getContentAsString(), "$.id");
+
+        MvcTestResult updated = mvc.patch().uri("/tickets/{id}/status", id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                        {"status": "ASSIGNED"}
+                        """)
+                .exchange();
+
+        assertThat(updated)
+                .hasStatusOk()
+                .bodyJson()
+                .extractingPath("$.status")
+                .isEqualTo("ASSIGNED");
     }
 }
