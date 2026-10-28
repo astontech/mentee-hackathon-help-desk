@@ -2,11 +2,15 @@ package com.example.helpdesk.service;
 
 import com.example.helpdesk.domain.Priority;
 import com.example.helpdesk.domain.Ticket;
+import com.example.helpdesk.domain.TicketStatus;
 import com.example.helpdesk.dto.CreateTicketRequest;
+import com.example.helpdesk.dto.TicketResponse;
 import com.example.helpdesk.repo.TicketRepository;
 import com.example.helpdesk.service.helper.PriorityWindowLookup;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +37,11 @@ public class TicketService {
     public Ticket get(Long id) {
         return ticketRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("No ticket with id " + id));
+    }
+
+    @Transactional(readOnly = true)
+    public Page<TicketResponse> getTickets(TicketStatus status, Priority priority, Pageable pageable) {
+        return ticketRepository.getTickets(status, priority, pageable).map(TicketResponse::from);
     }
 
     @Transactional(readOnly = true)

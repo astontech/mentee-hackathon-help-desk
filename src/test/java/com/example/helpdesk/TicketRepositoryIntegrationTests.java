@@ -9,6 +9,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -189,8 +192,64 @@ public class TicketRepositoryIntegrationTests {
 
     }
 
+    @Test
+    void filtersByStatus() {
+        //arrange
+        Ticket assigned = ticketRepository.save(new Ticket("assigned", "assigned", Priority.LOW,
+                TicketStatus.ASSIGNED, NOW));
+        saveTicket(Priority.LOW, NOW);
+        //act
+        Page<Ticket> page = ticketRepository.getTickets(TicketStatus.ASSIGNED, null, PageRequest.of(0,10));
+        //assert
+        assertThat(page.getContent()).extracting(Ticket::getId).containsExactly(assigned.getId());
+    }
 
+    @Test
+    void filtersByPriority() {
+        //arrange
+        Ticket high = saveTicket(Priority.HIGH, NOW);
+        saveTicket(Priority.LOW, NOW);
+        //act
+        Page<Ticket> page = ticketRepository.getTickets(null, Priority.HIGH, PageRequest.of(0,10));
+        //assert
+        assertThat(page.getContent()).extracting(Ticket::getId).containsExactly(high.getId());
+    }
 
+    @Test
+    void filtersByStatusAndPriority() {
+        //arrange
+        Ticket assignedAndHigh = ticketRepository.save(new Ticket("assigned", "assigned", Priority.HIGH,
+                TicketStatus.ASSIGNED, NOW));
+        //assigned and low, followed by unassigned and high
+        ticketRepository.save(new Ticket("assigned", "assigned", Priority.LOW, TicketStatus.ASSIGNED, NOW));
+        saveTicket(Priority.HIGH, NOW);
+        //act
+        Page<Ticket> page = ticketRepository.getTickets(TicketStatus.ASSIGNED, Priority.HIGH, PageRequest.of(0,10));
+        //assert
+        assertThat(page.getContent()).extracting(Ticket::getId).containsExactly(assignedAndHigh.getId());
+    }
+
+    @Test
+    void sortsByCreatedAtAscending() {
+        //arrange
+        Ticket later = saveTicket(Priority.LOW, NOW);
+        Ticket earlier = saveTicket(Priority.LOW, NOW.minus(Duration.ofHours(1)));
+        //act
+        Page<Ticket> page = ticketRepository.getTickets(null, null, PageRequest.of(0,10, Sort.by("createdAt").ascending()));
+        //assert
+        assertThat(page.getContent()).extracting(Ticket::getId).containsExactly(earlier.getId(), later.getId());
+    }
+
+    @Test
+    void sortsByCreatedAtDescending() {
+        //arrange
+        Ticket earlier = saveTicket(Priority.LOW, NOW.minus(Duration.ofHours(1)));
+        Ticket later = saveTicket(Priority.LOW, NOW);
+        //act
+        Page<Ticket> page = ticketRepository.getTickets(null, null, PageRequest.of(0,10, Sort.by("createdAt").descending()));
+        //assert
+        assertThat(page.getContent()).extracting(Ticket::getId).containsExactly(later.getId(), earlier.getId());
+    }
 
     //region helper methods
     Ticket saveTicket(Priority priority, Instant createdAt) {
