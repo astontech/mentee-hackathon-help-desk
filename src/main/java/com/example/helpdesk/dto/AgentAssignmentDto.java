@@ -1,11 +1,10 @@
 package com.example.helpdesk.dto;
 
+import com.example.helpdesk.domain.Agent;
+
 import java.time.Instant;
 
 
 public record AgentAssignmentDto(
-        Long id,
-        String name,
-        String email,
-        Instant lastAssignedTs,
+        Agent agent,
         Long ticketCount) {}

@@ -1,12 +1,6 @@
 package com.example.helpdesk.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.Instant;
@@ -45,6 +39,9 @@ public class Ticket {
     @Column
     private Instant dateAssigned;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Agent agent;
+
     public Ticket(String title, String description, Priority priority, Instant createdAt) {
         this.title = title;
         this.description = description;
@@ -52,11 +49,12 @@ public class Ticket {
         this.createdAt = createdAt;
     }
 
-    public Ticket(String title, String description, Priority priority, TicketStatus status, Instant createdAt){
+    public Ticket(String title, String description, Priority priority, TicketStatus status, Instant createdAt, Agent agent){
         this.title = title;
         this.description = description;
         this.priority = priority;
         this.status = status;
         this.createdAt = createdAt;
+        this.agent = agent;
     }
 }
