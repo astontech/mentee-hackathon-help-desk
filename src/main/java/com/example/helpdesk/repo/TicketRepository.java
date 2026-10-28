@@ -67,4 +67,24 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
             @Param("id") Long id,
             @Param("priority") Priority priority,
             @Param("lastEscalationDate") Instant lastEscalationDate);
+
+    @Query("""
+            SELECT t
+            FROM Ticket t
+            WHERE t.status <> 'RESOLVED'
+            AND t.lastEscalationDate IS NOT NULL
+            ORDER BY CASE t.priority
+                    WHEN 'URGENT' THEN 0
+                    WHEN 'HIGH' THEN 1
+                    WHEN 'NORMAL' THEN 2
+                    ELSE 3
+                END,
+                CASE t.status
+                    WHEN 'IN_PROGRESS' THEN 0
+                    WHEN 'ASSIGNED' THEN 1
+                    ELSE 2
+                END,
+                t.createdAt
+            """)
+    List<Ticket> findUnresolvedEscalatedTickets();
 }
