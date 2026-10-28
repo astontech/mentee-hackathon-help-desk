@@ -1,5 +1,6 @@
 package com.example.helpdesk;
 
+import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -63,4 +64,30 @@ class TicketApiTests {
         assertThat(mvc.get().uri("/tickets/999999")).hasStatus(404);
     }
 
+    @Test
+    void ticketStatusCanBeUpdated() throws Exception {
+        MvcTestResult created = mvc.post().uri("/tickets")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                        {"title": "ticketTitle", "priority": "LOW", "status": "UNASSIGNED"}
+                        """)
+                .exchange();
+
+        assertThat(created).hasStatus(201);
+
+        Integer id = JsonPath.read(created.getResponse().getContentAsString(), "$.id");
+
+        MvcTestResult updated = mvc.patch().uri("/tickets/{id}/status", id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                        {"status": "ASSIGNED"}
+                        """)
+                .exchange();
+
+        assertThat(updated)
+                .hasStatusOk()
+                .bodyJson()
+                .extractingPath("$.status")
+                .isEqualTo("ASSIGNED");
+    }
 }

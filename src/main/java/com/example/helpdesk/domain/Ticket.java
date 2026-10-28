@@ -7,10 +7,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.Instant;
 
@@ -18,6 +15,7 @@ import java.time.Instant;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class Ticket {
 
     @Id
@@ -41,12 +39,24 @@ public class Ticket {
     @Column(nullable = false)
     private Instant createdAt;
 
+    @Column
     private Instant lastEscalationDate;
+
+    @Column
+    private Instant dateAssigned;
 
     public Ticket(String title, String description, Priority priority, Instant createdAt) {
         this.title = title;
         this.description = description;
         this.priority = priority;
+        this.createdAt = createdAt;
+    }
+
+    public Ticket(String title, String description, Priority priority, TicketStatus status, Instant createdAt){
+        this.title = title;
+        this.description = description;
+        this.priority = priority;
+        this.status = status;
         this.createdAt = createdAt;
     }
 }
