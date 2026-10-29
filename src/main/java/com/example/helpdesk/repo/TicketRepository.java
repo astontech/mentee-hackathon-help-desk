@@ -1,7 +1,9 @@
 package com.example.helpdesk.repo;
 
+import com.example.helpdesk.domain.Agent;
 import com.example.helpdesk.domain.Priority;
 import com.example.helpdesk.domain.Ticket;
+import com.example.helpdesk.domain.TicketStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -67,4 +69,16 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
             @Param("id") Long id,
             @Param("priority") Priority priority,
             @Param("lastEscalationDate") Instant lastEscalationDate);
+
+    @Transactional
+    @Modifying
+    @Query("""
+    UPDATE Ticket t
+    SET t.status = :status, t.dateAssigned = CURRENT_TIMESTAMP, t.agent = :agent
+    WHERE t.id = :id
+    """)
+    int updateTicketAgentAndStatus(
+            @Param("id") Long id,
+            @Param("status") TicketStatus status,
+            @Param("agent") Agent agent);
 }

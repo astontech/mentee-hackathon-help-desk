@@ -3,6 +3,7 @@ package com.example.helpdesk.repo;
 import com.example.helpdesk.domain.Agent;
 import com.example.helpdesk.dto.AgentAssignmentDto;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -17,4 +18,12 @@ public interface AgentRepository extends JpaRepository<Agent, Long> {
             ORDER BY ticketCount, a.lastAssignedTs NULLS FIRST
             """)
     Iterable<AgentAssignmentDto> findAvailableAgentsOrderedByLastAssignment(@Param("ticketLimit") int ticketLimit);
+
+    @Modifying
+    @Query("""
+    UPDATE Agent a
+    SET a.lastUpdatedTs = CURRENT_TIMESTAMP
+    WHERE a.id = :id
+    """)
+    int updateAgentLastAssignedTs(@Param("id") Long id);
 }

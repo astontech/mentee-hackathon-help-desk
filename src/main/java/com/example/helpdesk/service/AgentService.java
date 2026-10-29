@@ -34,4 +34,9 @@ public class AgentService {
     public Iterable<AgentAssignmentDto> getAvailableAgents(){
         return agentRepository.findAvailableAgentsOrderedByLastAssignment(TICKET_LIMIT);
     }
+
+    @Transactional
+    public int updateLastAssignedTs(Agent agent){
+        return agentRepository.updateAgentLastAssignedTs(agent.getId());
+    }
 }
