@@ -4,6 +4,7 @@ import com.example.helpdesk.domain.Agent;
 import com.example.helpdesk.dto.AgentAssignmentDto;
 import com.example.helpdesk.dto.AgentRequest;
 import com.example.helpdesk.repo.AgentRepository;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;

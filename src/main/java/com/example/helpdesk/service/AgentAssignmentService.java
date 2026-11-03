@@ -1,10 +1,8 @@
 package com.example.helpdesk.service;
 
-import com.example.helpdesk.domain.Agent;
 import com.example.helpdesk.domain.Ticket;
 import com.example.helpdesk.dto.AgentAssignmentDto;
-import com.example.helpdesk.repo.TicketRepository;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -17,7 +15,7 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class AgentAssignmentService {
     private final AgentService agentService;
     private final TicketService ticketService;
@@ -32,20 +30,20 @@ public class AgentAssignmentService {
         Iterator<Ticket> ticketsToAssign = ticketService.getUnassignedTicketsOrderedByPriority().iterator();
 
         ticketsToAssign.forEachRemaining(ticket -> {
-            while(Objects.nonNull(availableAgents.peek())){
+            if(!availableAgents.isEmpty() && Objects.nonNull(availableAgents.peek())){
                 AgentAssignmentDto agent = availableAgents.poll();
                 ticket.setAgent(agent.agent());
-                ticketService.assignTicket(ticket);
                 agentService.updateLastAssignedTs(agent.agent());
+                ticketService.assignTicket(ticket);
                 updateTicketQueue(availableAgents, agent);
             }
         });
     }
 
     public void updateTicketQueue(Queue<AgentAssignmentDto> queue, AgentAssignmentDto agent){
-        Integer ticketCount = agent.ticketCount().intValue();
+        Integer ticketCount = agent.ticketCount().intValue() + 1;
         if(TICKET_LIMIT - ticketCount > 0){
-            queue.add(new AgentAssignmentDto(agent.agent(),ticketCount.longValue() + 1));
+            queue.add(new AgentAssignmentDto(agent.agent(),ticketCount.longValue()));
         }
     }
 }
