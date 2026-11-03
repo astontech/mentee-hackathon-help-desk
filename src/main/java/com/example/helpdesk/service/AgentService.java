@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +25,12 @@ public class AgentService {
     @Transactional(readOnly = true)
     public List<Agent> getAll() {
         return agentRepository.findAll(Sort.by("id"));
+    }
+
+    @Transactional(readOnly = true)
+    public Agent get(Long id) {
+        return agentRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("No agent with id " + id));
     }
 
     @Transactional

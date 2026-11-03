@@ -6,6 +6,7 @@ import com.example.helpdesk.dto.AgentResponse;
 import com.example.helpdesk.service.AgentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,6 +23,11 @@ public class AgentController {
     @GetMapping
     public List<AgentResponse> getAll() {
         return agentService.getAll().stream().map(AgentResponse::from).toList();
+    }
+
+    @GetMapping("{id}")
+    public ResponseEntity<AgentResponse> get(@PathVariable Long id) {
+        return new ResponseEntity<>(AgentResponse.from(agentService.get(id)), HttpStatus.OK);
     }
 
     @PostMapping()
