@@ -2,6 +2,7 @@ package com.example.helpdesk.service;
 
 import com.example.helpdesk.domain.Priority;
 import com.example.helpdesk.domain.Ticket;
+import com.example.helpdesk.domain.TicketStatus;
 import com.example.helpdesk.dto.CreateTicketRequest;
 import com.example.helpdesk.repo.TicketRepository;
 import com.example.helpdesk.service.helper.PriorityWindowLookup;
