@@ -94,41 +94,39 @@ class AgentApiTests {
 
     @Test
     void unresolvedTicketsAssociatedWithAgentCanBeFound() {
+        //save agents first so tickets can point to them
+        Agent john = agentRepository.save(new Agent("John", "John@email.com"));
+        Agent jane = agentRepository.save(new Agent("Jane", "Jane@email.com"));
+
         Ticket unassigned = new Ticket("johns unassigned", "johns unassigned", Priority.HIGH, Instant.now());
         unassigned.setStatus(TicketStatus.UNASSIGNED);
-        ticketRepository.save(unassigned);
-
         Ticket assigned = new Ticket("johns assigned", "johns assigned", Priority.HIGH, Instant.now());
         assigned.setStatus(TicketStatus.ASSIGNED);
-        ticketRepository.save(assigned);
-
-        Ticket inProgress = new Ticket("johns inProgress","johns inProgress", Priority.HIGH, Instant.now());
+        Ticket inProgress = new Ticket("johns inProgress", "johns inProgress", Priority.HIGH, Instant.now());
         inProgress.setStatus(TicketStatus.IN_PROGRESS);
-        ticketRepository.save(inProgress);
-
-        Ticket resolved = new Ticket("johns resolved","johns resolved", Priority.HIGH, Instant.now());
+        Ticket resolved = new Ticket("johns resolved", "johns resolved", Priority.HIGH, Instant.now());
         resolved.setStatus(TicketStatus.RESOLVED);
-        ticketRepository.save(resolved);
 
-        Agent john = new Agent("John", "John@email.com");
-        john.setTickets(List.of(unassigned, assigned, inProgress, resolved));
-        agentRepository.save(john);
+        //Ticket.agent owns the relationship (Agent.tickets is mappedBy = "agent"),
+        //so the link has to be set on the ticket side to be saved
+        for (Ticket t : List.of(unassigned, assigned, inProgress, resolved)) {
+            t.setAgent(john);
+            ticketRepository.save(t);
+        }
 
         //make sure query filters by agent
         Ticket assigned2 = new Ticket("janes assigned", "janes assigned", Priority.HIGH, Instant.now());
         assigned2.setStatus(TicketStatus.ASSIGNED);
-        ticketRepository.save(assigned2);
-
-        Ticket inProgress2 = new Ticket("janes inProgress","janes inProgress", Priority.HIGH, Instant.now());
+        Ticket inProgress2 = new Ticket("janes inProgress", "janes inProgress", Priority.HIGH, Instant.now());
         inProgress2.setStatus(TicketStatus.IN_PROGRESS);
-        ticketRepository.save(inProgress2);
 
-        Agent jane = new Agent("Jane", "Jane@email.com");
-        jane.setTickets(List.of(assigned2, inProgress2));
-        agentRepository.save(jane);
+        for (Ticket t : List.of(assigned2, inProgress2)) {
+            t.setAgent(jane);
+            ticketRepository.save(t);
+        }
 
         //now see if query excludes all except in_progress & assigned
-        MvcTestResult johnsUnresolvedTickets = mvc.get().uri("/agents/"+ john.getId() +"/tickets")
+        MvcTestResult johnsUnresolvedTickets = mvc.get().uri("/agents/" + john.getId() + "/tickets")
                 .exchange();
 
         assertThat(johnsUnresolvedTickets).hasStatusOk();
