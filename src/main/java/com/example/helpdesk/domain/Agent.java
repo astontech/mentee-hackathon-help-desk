@@ -29,7 +29,7 @@ public class Agent {
     @Column
     private Instant lastAssignedTs;
 
-    @OneToMany
+    @OneToMany(mappedBy = "agent")
     private List<Ticket> tickets;
 
     public Agent(String name, String email) {
@@ -37,10 +37,9 @@ public class Agent {
         this.email = email;
     }
 
-    public Agent(String name, String email, Instant lastAssignedTs, List<Ticket> tickets){
+    public Agent(String name, String email, Instant lastAssignedTs){
         this.name = name;
         this.email = email;
         this.lastAssignedTs = lastAssignedTs;
-        this.tickets = tickets;
     }
 }

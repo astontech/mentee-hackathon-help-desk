@@ -12,7 +12,7 @@ import java.util.List;
 public interface AgentRepository extends JpaRepository<Agent, Long> {
 
     @Query("""
-            SELECT NEW com.example.helpdesk.dto.AgentAssignmentDto(a.id, a.name, a.email, a.lastAssignedTs, COUNT(t.id) AS ticketCount)
+            SELECT NEW com.example.helpdesk.dto.AgentAssignmentDto(a, COUNT(t.id) AS ticketCount)
             FROM Agent a
             LEFT JOIN a.tickets t ON t.status != 'RESOLVED'
             GROUP BY a.id
