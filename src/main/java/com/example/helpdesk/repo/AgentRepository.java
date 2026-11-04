@@ -19,10 +19,10 @@ public interface AgentRepository extends JpaRepository<Agent, Long> {
             """)
     Iterable<AgentAssignmentDto> findAvailableAgentsOrderedByLastAssignment(@Param("ticketLimit") int ticketLimit);
 
-    @Modifying
+    @Modifying(clearAutomatically = true)
     @Query("""
     UPDATE Agent a
-    SET a.lastUpdatedTs = CURRENT_TIMESTAMP
+    SET a.lastAssignedTs = CURRENT_TIMESTAMP
     WHERE a.id = :id
     """)
     int updateAgentLastAssignedTs(@Param("id") Long id);
