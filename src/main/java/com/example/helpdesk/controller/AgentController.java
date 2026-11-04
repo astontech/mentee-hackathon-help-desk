@@ -1,6 +1,7 @@
 package com.example.helpdesk.controller;
 
 import com.example.helpdesk.domain.Agent;
+import com.example.helpdesk.domain.Ticket;
 import com.example.helpdesk.dto.AgentRequest;
 import com.example.helpdesk.dto.AgentResponse;
 import com.example.helpdesk.service.AgentService;
@@ -28,6 +29,11 @@ public class AgentController {
     @GetMapping("{id}")
     public ResponseEntity<AgentResponse> get(@PathVariable Long id) {
         return new ResponseEntity<>(AgentResponse.from(agentService.get(id)), HttpStatus.OK);
+    }
+
+    @GetMapping("{id}/tickets")
+    public ResponseEntity<List<Ticket>> getAgentTicketsUnresolved(@PathVariable Long id) {
+        return new ResponseEntity<>(agentService.findUnresolvedTicketsByAgent(id), HttpStatus.OK);
     }
 
     @PostMapping()
