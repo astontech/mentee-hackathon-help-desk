@@ -4,6 +4,7 @@ import com.example.helpdesk.domain.Priority;
 import com.example.helpdesk.domain.Ticket;
 import com.example.helpdesk.domain.TicketStatus;
 import com.example.helpdesk.dto.CreateTicketRequest;
+import com.example.helpdesk.dto.TicketResponse;
 import com.example.helpdesk.repo.TicketRepository;
 import com.example.helpdesk.service.helper.PriorityWindowLookup;
 import lombok.RequiredArgsConstructor;
@@ -79,5 +80,20 @@ public class TicketService {
         else{
             log.debug("Number of tickets escalated: {}", ticketsEscalated);
         }
+    }
+
+    @Transactional
+    public Ticket updateStatus(Long id, TicketStatus status) {
+        Ticket ticket = ticketRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("No ticket with id " + id));
+
+        ticket.setStatus(status);
+        return ticketRepository.save(ticket);
+    }
+
+    @Transactional(readOnly = true)
+    public List<TicketResponse> getUnresolvedEscalated() {
+        return ticketRepository.findUnresolvedEscalatedTickets()
+                .stream().map(TicketResponse::from).toList();
     }
 }

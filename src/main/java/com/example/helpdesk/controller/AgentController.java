@@ -1,11 +1,13 @@
 package com.example.helpdesk.controller;
 
 import com.example.helpdesk.domain.Agent;
+import com.example.helpdesk.domain.Ticket;
 import com.example.helpdesk.dto.AgentRequest;
 import com.example.helpdesk.dto.AgentResponse;
 import com.example.helpdesk.service.AgentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,6 +24,16 @@ public class AgentController {
     @GetMapping
     public List<AgentResponse> getAll() {
         return agentService.getAll().stream().map(AgentResponse::from).toList();
+    }
+
+    @GetMapping("{id}")
+    public ResponseEntity<AgentResponse> get(@PathVariable Long id) {
+        return new ResponseEntity<>(AgentResponse.from(agentService.get(id)), HttpStatus.OK);
+    }
+
+    @GetMapping("{id}/tickets")
+    public ResponseEntity<List<Ticket>> getAgentTicketsUnresolved(@PathVariable Long id) {
+        return new ResponseEntity<>(agentService.findUnresolvedTicketsByAgent(id), HttpStatus.OK);
     }
 
     @PostMapping()
