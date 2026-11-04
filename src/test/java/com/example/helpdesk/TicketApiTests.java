@@ -90,4 +90,9 @@ class TicketApiTests {
                 .extractingPath("$.status")
                 .isEqualTo("ASSIGNED");
     }
+
+    @Test
+    void escalatedUnresolvedReturns200() {
+        assertThat(mvc.get().uri("/tickets/escalated")).hasStatusOk();
+    }
 }

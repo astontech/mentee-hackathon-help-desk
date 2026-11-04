@@ -12,7 +12,8 @@ public record TicketResponse(
         String description,
         Priority priority,
         TicketStatus status,
-        Instant createdAt
+        Instant createdAt,
+        Instant lastEscalationDate
 ) {
     public static TicketResponse from(Ticket ticket) {
         return new TicketResponse(
@@ -21,6 +22,7 @@ public record TicketResponse(
                 ticket.getDescription(),
                 ticket.getPriority(),
                 ticket.getStatus(),
-                ticket.getCreatedAt());
+                ticket.getCreatedAt(),
+                ticket.getLastEscalationDate());
     }
 }
