@@ -1,4 +1,5 @@
 escalation-job-schedule-window: "5s"
+ticket-assignment-job-schedule-window: "*/5 * * * * *"
 
 escalation:
   windows:

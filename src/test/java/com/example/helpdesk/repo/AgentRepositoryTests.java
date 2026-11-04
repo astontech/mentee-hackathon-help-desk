@@ -39,9 +39,9 @@ public class AgentRepositoryTests {
         //Arrange
         Instant now = Instant.now();
         //create Agent1 with 2 active tickets
-        Agent agent1 = saveAgent(now);
+        Agent agent1 = saveAgentWithTs(now);
         //create Agent2 with 0 tickets
-        Agent agent2 = saveAgent(now);
+        Agent agent2 = saveAgentWithTs(now);
 
         saveTicket(Priority.NORMAL, TicketStatus.ASSIGNED, Instant.now(), agent1);
         saveTicket(Priority.NORMAL, TicketStatus.IN_PROGRESS, Instant.now(), agent1);
@@ -58,12 +58,12 @@ public class AgentRepositoryTests {
     @Test
     void agentReturnedFirstIfAllTicketsAreResolved(){
         //Arrange
-        Agent agent1 = saveAgent(Instant.now());
+        Agent agent1 = saveAgentWithTs(Instant.now());
         saveTicket(Priority.NORMAL, TicketStatus.ASSIGNED, Instant.now(), agent1);
         saveTicket(Priority.URGENT, TicketStatus.IN_PROGRESS, Instant.now(), agent1);
         saveTicket(Priority.HIGH, TicketStatus.RESOLVED, Instant.now(), agent1);
 
-        Agent agent2 = saveAgent(Instant.now());
+        Agent agent2 = saveAgentWithTs(Instant.now());
         saveTicket(Priority.NORMAL, TicketStatus.RESOLVED, Instant.now(), agent2);
         saveTicket(Priority.URGENT, TicketStatus.RESOLVED, Instant.now(), agent2);
         saveTicket(Priority.HIGH, TicketStatus.RESOLVED, Instant.now(), agent2);
@@ -80,12 +80,12 @@ public class AgentRepositoryTests {
     @Test
     void returnsNothingWhenAllAgentsAreAtLimit(){
         //Arrange
-        Agent agent1 = saveAgent(Instant.now());
+        Agent agent1 = saveAgentWithTs(Instant.now());
         saveTicket(Priority.NORMAL, TicketStatus.ASSIGNED, Instant.now(), agent1);
         saveTicket(Priority.URGENT, TicketStatus.IN_PROGRESS, Instant.now(), agent1);
         saveTicket(Priority.HIGH, TicketStatus.ASSIGNED, Instant.now(), agent1);
 
-        Agent agent2 = saveAgent(Instant.now());
+        Agent agent2 = saveAgentWithTs(Instant.now());
         saveTicket(Priority.NORMAL, TicketStatus.ASSIGNED, Instant.now(), agent2);
         saveTicket(Priority.URGENT, TicketStatus.ASSIGNED, Instant.now(), agent2);
         saveTicket(Priority.HIGH, TicketStatus.ASSIGNED, Instant.now(), agent2);
@@ -102,7 +102,7 @@ public class AgentRepositoryTests {
     void resolvedTicketsDoNotCountTowardTicketLimit(){
         //Arrange
         List<Ticket> tickets1 = new ArrayList<>();
-        Agent agent = saveAgent(Instant.now());
+        Agent agent = saveAgentWithTs(Instant.now());
         saveTicket(Priority.NORMAL, TicketStatus.ASSIGNED, Instant.now(), agent);
         saveTicket(Priority.URGENT, TicketStatus.IN_PROGRESS, Instant.now(), agent);
         saveTicket(Priority.HIGH, TicketStatus.RESOLVED, Instant.now(), agent);
@@ -122,11 +122,11 @@ public class AgentRepositoryTests {
     void returnsAgentsWithSameAvailabilityOrderedByDateAssigned(){
         //Arrange
         Instant NOW = Instant.now();
-        Agent agent1 = saveAgent(NOW);
+        Agent agent1 = saveAgentWithTs(NOW);
         saveTicket(Priority.NORMAL, TicketStatus.ASSIGNED, Instant.now(), agent1);
         saveTicket(Priority.URGENT, TicketStatus.IN_PROGRESS, Instant.now(), agent1);
 
-        Agent agent2 = saveAgent(NOW.minus(2, ChronoUnit.HOURS));
+        Agent agent2 = saveAgentWithTs(NOW.minus(2, ChronoUnit.HOURS));
         saveTicket(Priority.NORMAL, TicketStatus.IN_PROGRESS, Instant.now(), agent2);
         saveTicket(Priority.URGENT, TicketStatus.ASSIGNED, Instant.now(), agent2);
 
@@ -136,6 +136,20 @@ public class AgentRepositoryTests {
         //Assert
         //Agent2 Should come first as they have gone the longest without being assigned
         assertThat(agents).extracting(AgentAssignmentDto::agent).containsExactly(agent2, agent1);
+    }
+
+    @Test
+    void updatesAgentLastAssignedTs(){
+        Instant oldTs = Instant.now().minus(1, ChronoUnit.HOURS);
+        Agent agent = saveAgentWithTs(oldTs);
+
+        int fieldsChanged = agentRepository.updateAgentLastAssignedTs(agent.getId());
+
+        Agent updatedAgent = agentRepository.findById(agent.getId()).orElse(null);
+        assertThat(fieldsChanged).isEqualTo(1);
+        assertThat(updatedAgent).isNotNull();
+        assertThat(updatedAgent.getLastAssignedTs()).isAfter(oldTs);
+
     }
 
     //Ticket creation helper method
@@ -151,7 +165,7 @@ public class AgentRepositoryTests {
     }
 
     //Agent creation helper method
-    Agent saveAgent(Instant lastAssignedTs){
+    Agent saveAgentWithTs(Instant lastAssignedTs){
         return agentRepository.save(new Agent(
                 "Agent" + counter.get(),
                 "example" + counter.getAndIncrement() + "@example.com",
