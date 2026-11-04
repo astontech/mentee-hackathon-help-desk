@@ -5,6 +5,7 @@ import com.example.helpdesk.domain.Ticket;
 import com.example.helpdesk.dto.AgentAssignmentDto;
 import com.example.helpdesk.dto.AgentRequest;
 import com.example.helpdesk.repo.AgentRepository;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
@@ -46,5 +47,10 @@ public class AgentService {
 
     public Iterable<AgentAssignmentDto> getAvailableAgents(){
         return agentRepository.findAvailableAgentsOrderedByLastAssignment(TICKET_LIMIT);
+    }
+
+    @Transactional
+    public int updateLastAssignedTs(Agent agent){
+        return agentRepository.updateAgentLastAssignedTs(agent.getId());
     }
 }

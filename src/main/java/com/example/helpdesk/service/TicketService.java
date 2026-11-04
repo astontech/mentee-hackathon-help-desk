@@ -49,6 +49,11 @@ public class TicketService {
         return ticketRepository.findUnassignedTicketsOrderedByPriority();
     }
 
+    @Transactional
+    public int assignTicket(Ticket ticket){
+        return ticketRepository.updateTicketAgentAndStatus(ticket.getId(), TicketStatus.ASSIGNED, ticket.getAgent());
+    }
+
     @Scheduled(fixedRateString = "${escalation-job-schedule-window}")
     public void escalateOverdueTickets() {
         //run escalation query
