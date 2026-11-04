@@ -196,7 +196,7 @@ public class TicketRepositoryIntegrationTests {
     void filtersByStatus() {
         //arrange
         Ticket assigned = ticketRepository.save(new Ticket("assigned", "assigned", Priority.LOW,
-                TicketStatus.ASSIGNED, NOW));
+                TicketStatus.ASSIGNED, NOW, null));
         saveTicket(Priority.LOW, NOW);
         //act
         Page<Ticket> page = ticketRepository.getTickets(TicketStatus.ASSIGNED, null, PageRequest.of(0,10));
@@ -219,9 +219,9 @@ public class TicketRepositoryIntegrationTests {
     void filtersByStatusAndPriority() {
         //arrange
         Ticket assignedAndHigh = ticketRepository.save(new Ticket("assigned", "assigned", Priority.HIGH,
-                TicketStatus.ASSIGNED, NOW));
+                TicketStatus.ASSIGNED, NOW, null));
         //assigned and low, followed by unassigned and high
-        ticketRepository.save(new Ticket("assigned", "assigned", Priority.LOW, TicketStatus.ASSIGNED, NOW));
+        ticketRepository.save(new Ticket("assigned", "assigned", Priority.LOW, TicketStatus.ASSIGNED, NOW, null));
         saveTicket(Priority.HIGH, NOW);
         //act
         Page<Ticket> page = ticketRepository.getTickets(TicketStatus.ASSIGNED, Priority.HIGH, PageRequest.of(0,10));
