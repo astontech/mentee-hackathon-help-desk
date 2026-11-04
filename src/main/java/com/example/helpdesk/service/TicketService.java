@@ -92,4 +92,10 @@ public class TicketService {
         ticket.setStatus(status);
         return ticketRepository.save(ticket);
     }
+
+    @Transactional(readOnly = true)
+    public List<TicketResponse> getUnresolvedEscalated() {
+        return ticketRepository.findUnresolvedEscalatedTickets()
+                .stream().map(TicketResponse::from).toList();
+    }
 }

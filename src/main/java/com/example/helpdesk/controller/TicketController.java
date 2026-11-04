@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("tickets")
@@ -35,6 +36,11 @@ public class TicketController {
     @GetMapping("{id}")
     public TicketResponse get(@PathVariable Long id) {
         return TicketResponse.from(ticketService.get(id));
+    }
+
+    @GetMapping("escalated")
+    public ResponseEntity<List<TicketResponse>> getUnresolvedEscalatedTickets() {
+        return new ResponseEntity<>(ticketService.getUnresolvedEscalated(), HttpStatus.OK);
     }
 
     //pageable allows for sorting

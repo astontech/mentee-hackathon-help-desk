@@ -1,6 +1,7 @@
 package com.example.helpdesk.service;
 
 import com.example.helpdesk.domain.Agent;
+import com.example.helpdesk.domain.Ticket;
 import com.example.helpdesk.dto.AgentAssignmentDto;
 import com.example.helpdesk.dto.AgentRequest;
 import com.example.helpdesk.repo.AgentRepository;
@@ -31,6 +32,11 @@ public class AgentService {
     public Agent get(Long id) {
         return agentRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("No agent with id " + id));
+    }
+
+    @Transactional(readOnly = true)
+    public List<Ticket> findUnresolvedTicketsByAgent(Long agentId) {
+        return agentRepository.findUnresolvedTicketsByAgentId(agentId);
     }
 
     @Transactional

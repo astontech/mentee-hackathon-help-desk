@@ -193,6 +193,20 @@ public class TicketRepositoryIntegrationTests {
     }
 
     @Test
+    void returnsEscalatedUnresolvedTickets() {
+        //arrange
+        Ticket notEscalatedUnresolved = saveTicket(Priority.LOW, NOW);
+        Ticket resolved = ticketRepository.save(new Ticket("title","desc",Priority.LOW, TicketStatus.RESOLVED, NOW.minus(Duration.ofHours(1)), null));
+        resolved.setLastEscalationDate(NOW);
+        ticketRepository.save(resolved);
+        Ticket escalatedUnresolved = saveTicket(Priority.LOW, NOW.minus(Duration.ofHours(1)), NOW);
+        //act
+        List<Ticket> list = ticketRepository.findUnresolvedEscalatedTickets();
+        //assert
+        assertThat(list).extracting(Ticket::getId).containsExactly(escalatedUnresolved.getId());
+    }
+
+    @Test
     void filtersByStatus() {
         //arrange
         Ticket assigned = ticketRepository.save(new Ticket("assigned", "assigned", Priority.LOW,
@@ -213,6 +227,30 @@ public class TicketRepositoryIntegrationTests {
         Page<Ticket> page = ticketRepository.getTickets(null, Priority.HIGH, PageRequest.of(0,10));
         //assert
         assertThat(page.getContent()).extracting(Ticket::getId).containsExactly(high.getId());
+    }
+
+    @Test
+    void escalatedUnresolvedDoesNotReturnUnescalatedTickets() {
+        //arrange
+        Ticket notEscalatedUnresolved = saveTicket(Priority.LOW, NOW);
+        Ticket escalatedUnresolved = saveTicket(Priority.LOW, NOW.minus(Duration.ofHours(1)), NOW);
+        //act
+        List<Ticket> list = ticketRepository.findUnresolvedEscalatedTickets();
+        //assert
+        assertThat(list).extracting(Ticket::getId).containsExactly(escalatedUnresolved.getId());
+    }
+
+    @Test
+    void escalatedUnresolvedDoesNotReturnResolvedTickets() {
+        //arrange
+        Ticket resolvedAndEscalated = new Ticket("title","desc",Priority.LOW,TicketStatus.RESOLVED, NOW.minus(Duration.ofHours(1)), null);
+        resolvedAndEscalated.setLastEscalationDate(NOW);
+        ticketRepository.save(resolvedAndEscalated);
+        Ticket escalatedUnresolved = saveTicket(Priority.LOW, NOW.minus(Duration.ofHours(1)), NOW);
+        //act
+        List<Ticket> list = ticketRepository.findUnresolvedEscalatedTickets();
+        //assert
+        assertThat(list).extracting(Ticket::getId).containsExactly(escalatedUnresolved.getId());
     }
 
     @Test
@@ -258,6 +296,16 @@ public class TicketRepositoryIntegrationTests {
                 "desc",
                 priority,
                 createdAt
+        ));
+    }
+
+    Ticket saveTicket(Priority priority, Instant createdAt, Instant lastEscalationDate) {
+        return ticketRepository.save(new Ticket(
+                "title",
+                "desc",
+                priority,
+                createdAt,
+                lastEscalationDate
         ));
     }
 
