@@ -193,7 +193,7 @@ public class TicketRepositoryIntegrationTests {
     void returnsEscalatedUnresolvedTickets() {
         //arrange
         Ticket notEscalatedUnresolved = saveTicket(Priority.LOW, NOW);
-        Ticket resolved = ticketRepository.save(new Ticket("title","desc",Priority.LOW,TicketStatus.RESOLVED, NOW.minus(Duration.ofHours(1))));
+        Ticket resolved = ticketRepository.save(new Ticket("title","desc",Priority.LOW, TicketStatus.RESOLVED, NOW.minus(Duration.ofHours(1)), null));
         resolved.setLastEscalationDate(NOW);
         ticketRepository.save(resolved);
         Ticket escalatedUnresolved = saveTicket(Priority.LOW, NOW.minus(Duration.ofHours(1)), NOW);
@@ -217,7 +217,7 @@ public class TicketRepositoryIntegrationTests {
     @Test
     void escalatedUnresolvedDoesNotReturnResolvedTickets() {
         //arrange
-        Ticket resolvedAndEscalated = new Ticket("title","desc",Priority.LOW,TicketStatus.RESOLVED, NOW.minus(Duration.ofHours(1)));
+        Ticket resolvedAndEscalated = new Ticket("title","desc",Priority.LOW,TicketStatus.RESOLVED, NOW.minus(Duration.ofHours(1)), null);
         resolvedAndEscalated.setLastEscalationDate(NOW);
         ticketRepository.save(resolvedAndEscalated);
         Ticket escalatedUnresolved = saveTicket(Priority.LOW, NOW.minus(Duration.ofHours(1)), NOW);
