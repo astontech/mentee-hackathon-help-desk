@@ -1,5 +1,7 @@
 package com.example.helpdesk.controller;
 
+import org.hibernate.query.sqm.UnknownPathException;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -54,5 +56,14 @@ public class GlobalControllerAdvice {
     @ExceptionHandler(NoSuchElementException.class)
     public ProblemDetail handleNotFound(NoSuchElementException ex) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(InvalidDataAccessApiUsageException.class)
+    public ProblemDetail handleUnknownSortField(InvalidDataAccessApiUsageException ex) {
+        if (ex.contains(UnknownPathException.class)) {
+            return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Invalid sort field");
+        }
+        //something else happened, server error
+        return ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected error");
     }
 }

@@ -4,6 +4,8 @@ import com.example.helpdesk.domain.Agent;
 import com.example.helpdesk.domain.Priority;
 import com.example.helpdesk.domain.Ticket;
 import com.example.helpdesk.domain.TicketStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -81,7 +83,7 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
             @Param("id") Long id,
             @Param("status") TicketStatus status,
             @Param("agent") Agent agent);
-    
+
     @Query("""
             SELECT t
             FROM Ticket t
@@ -101,4 +103,13 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
                 t.createdAt
             """)
     List<Ticket> findUnresolvedEscalatedTickets();
+
+    @Query("""
+                SELECT t FROM Ticket t
+                WHERE (:status IS NULL OR :status = t.status)
+                AND (:priority IS NULL OR :priority = t.priority)
+            """)
+    Page<Ticket> getTickets(@Param("status") TicketStatus status,
+                            @Param("priority") Priority priority,
+                            Pageable pageable);
 }

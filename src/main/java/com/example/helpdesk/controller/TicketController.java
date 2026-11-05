@@ -1,5 +1,6 @@
 package com.example.helpdesk.controller;
 
+import com.example.helpdesk.domain.Priority;
 import com.example.helpdesk.domain.Ticket;
 import com.example.helpdesk.domain.TicketStatus;
 import com.example.helpdesk.dto.CreateTicketRequest;
@@ -9,6 +10,9 @@ import com.example.helpdesk.service.TicketService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,6 +41,14 @@ public class TicketController {
     @GetMapping("escalated")
     public ResponseEntity<List<TicketResponse>> getUnresolvedEscalatedTickets() {
         return new ResponseEntity<>(ticketService.getUnresolvedEscalated(), HttpStatus.OK);
+    }
+
+    //pageable allows for sorting
+    @GetMapping
+    public Page<TicketResponse> getTickets( @RequestParam(required = false) TicketStatus status,
+                                                @RequestParam(required = false) Priority priority,
+                                                @PageableDefault(size = 10, sort = "id") Pageable pageable) {
+        return ticketService.getTickets(status, priority, pageable);
     }
 
     @PatchMapping("{id}/status")
