@@ -4,7 +4,6 @@ import com.example.helpdesk.domain.Agent;
 import com.example.helpdesk.domain.Priority;
 import com.example.helpdesk.domain.Ticket;
 import com.example.helpdesk.domain.TicketStatus;
-import com.example.helpdesk.domain.TicketStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
