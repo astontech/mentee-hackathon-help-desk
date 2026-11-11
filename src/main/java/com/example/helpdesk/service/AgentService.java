@@ -1,9 +1,9 @@
 package com.example.helpdesk.service;
 
 import com.example.helpdesk.domain.Agent;
-import com.example.helpdesk.domain.Ticket;
 import com.example.helpdesk.dto.AgentAssignmentDto;
 import com.example.helpdesk.dto.AgentRequest;
+import com.example.helpdesk.dto.TicketResponse;
 import com.example.helpdesk.repo.AgentRepository;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -36,8 +36,8 @@ public class AgentService {
     }
 
     @Transactional(readOnly = true)
-    public List<Ticket> findUnresolvedTicketsByAgent(Long agentId) {
-        return agentRepository.findUnresolvedTicketsByAgentId(agentId);
+    public List<TicketResponse> findUnresolvedTicketsByAgent(Long agentId) {
+        return agentRepository.findUnresolvedTicketsByAgentId(agentId).stream().map(TicketResponse::from).toList();
     }
 
     @Transactional

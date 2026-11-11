@@ -1,9 +1,9 @@
 package com.example.helpdesk.controller;
 
 import com.example.helpdesk.domain.Agent;
-import com.example.helpdesk.domain.Ticket;
 import com.example.helpdesk.dto.AgentRequest;
 import com.example.helpdesk.dto.AgentResponse;
+import com.example.helpdesk.dto.TicketResponse;
 import com.example.helpdesk.service.AgentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +32,7 @@ public class AgentController {
     }
 
     @GetMapping("{id}/tickets")
-    public ResponseEntity<List<Ticket>> getAgentTicketsUnresolved(@PathVariable Long id) {
+    public ResponseEntity<List<TicketResponse>> getAgentTicketsUnresolved(@PathVariable Long id) {
         return new ResponseEntity<>(agentService.findUnresolvedTicketsByAgent(id), HttpStatus.OK);
     }
 
