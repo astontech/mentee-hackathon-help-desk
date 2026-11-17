@@ -5,10 +5,9 @@ import com.example.helpdesk.domain.Agent;
 public record AgentResponse(
         Long id,
         String name,
-        String email,
-        int ticketLimit
+        String email
 ) {
     public static AgentResponse from(Agent agent) {
-        return new AgentResponse(agent.getId(), agent.getName(), agent.getEmail(), agent.getTicketLimit());
+        return new AgentResponse(agent.getId(), agent.getName(), agent.getEmail());
     }
 }

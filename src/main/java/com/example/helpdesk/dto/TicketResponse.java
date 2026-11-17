@@ -2,6 +2,7 @@ package com.example.helpdesk.dto;
 
 import com.example.helpdesk.domain.Priority;
 import com.example.helpdesk.domain.Ticket;
+import com.example.helpdesk.domain.TicketStatus;
 
 import java.time.Instant;
 
@@ -10,7 +11,9 @@ public record TicketResponse(
         String title,
         String description,
         Priority priority,
-        Instant createdAt
+        TicketStatus status,
+        Instant createdAt,
+        Instant lastEscalationDate
 ) {
     public static TicketResponse from(Ticket ticket) {
         return new TicketResponse(
@@ -18,6 +21,8 @@ public record TicketResponse(
                 ticket.getTitle(),
                 ticket.getDescription(),
                 ticket.getPriority(),
-                ticket.getCreatedAt());
+                ticket.getStatus(),
+                ticket.getCreatedAt(),
+                ticket.getLastEscalationDate());
     }
 }

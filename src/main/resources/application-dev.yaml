@@ -1,0 +1,11 @@
+escalation-job-schedule-window: "5s"
+ticket-assignment-job-schedule-window: "*/5 * * * * *"
+
+escalation:
+  windows:
+    LOW: "5m"
+    NORMAL: "1m"
+    HIGH: "30s"
+    URGENT: "10s"
+agent:
+  ticket-limit: 3

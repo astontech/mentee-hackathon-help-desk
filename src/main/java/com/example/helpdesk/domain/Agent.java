@@ -1,17 +1,18 @@
 package com.example.helpdesk.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-// Agents come from data.sql. There's no endpoint to add or change them.
+import java.time.Instant;
+import java.util.List;
+
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Agent {
 
@@ -25,7 +26,20 @@ public class Agent {
     @Column(nullable = false, unique = true)
     private String email;
 
-    // The most open tickets this agent can hold at once
-    @Column(nullable = false)
-    private int ticketLimit;
+    @Column
+    private Instant lastAssignedTs;
+
+    @OneToMany(mappedBy = "agent")
+    private List<Ticket> tickets;
+
+    public Agent(String name, String email) {
+        this.name = name;
+        this.email = email;
+    }
+
+    public Agent(String name, String email, Instant lastAssignedTs){
+        this.name = name;
+        this.email = email;
+        this.lastAssignedTs = lastAssignedTs;
+    }
 }
