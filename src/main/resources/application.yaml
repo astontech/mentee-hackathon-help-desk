@@ -15,7 +15,7 @@ spring:
       mode: always
 
 escalation-job-schedule-window: "5m"
-ticket-assignment-job-schedule-window: "*/5 * * * *"
+ticket-assignment-job-schedule-window: "0 */5 * * * *"
 
 agent:
   ticket-limit: 3
